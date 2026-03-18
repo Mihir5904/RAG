@@ -9,8 +9,6 @@ It specifically features an internal "Reasoning Pipeline" where it dynamically t
     Agentic Pipeline: Extracts, chunks, vectorizes via HuggingFace locally, and reasons using Groq Cloud.
     Context Inspector: Users can toggle to see exactly which documents and what translated (ZH) / native (EN) context the LLM used to derive its answer.
     Local Embedded Storage: Persists vector embeddings onto disk using ChromaDB (no third-party cloud vector stores required).
-Project Architecture
-
 llmrag/
 │
 ├── backend/
