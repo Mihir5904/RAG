@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DocuMind LLM - Agentic RAG</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="brand">
+                <i class="fas fa-brain brand-icon"></i>
+                <h2>DocuMind LLM</h2>
+            </div>
+
+            <div class="upload-section">
+                <div class="upload-area" id="drop-zone">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>Drag & Drop PDF or <span class="highlight">Browse</span></p>
+                    <input type="file" id="file-input" accept="application/pdf" hidden>
+                </div>
+                <!-- Loading State for Uploads -->
+                <div id="upload-loader" class="loader hidden">
+                    <div class="spinner"></div>
+                    <span id="upload-status">Processing document...</span>
+                </div>
+            </div>
+
+            <div class="docs-list-container">
+                <h3><i class="fas fa-file-pdf"></i> Your Documents</h3>
+                <ul id="docs-list" class="docs-list">
+                    <!-- Documents populated by JS -->
+                </ul>
+            </div>
+            
+            <div class="sidebar-footer">
+                <p>Powered by LLaMA 3.1 & BGE</p>
+            </div>
+        </aside>
+
+        <!-- Main Chat Area -->
+        <main class="chat-area">
+            <header class="chat-header">
+                <div>
+                    <h1>Agentic Knowledge Base</h1>
+                    <p class="subtitle">Ask questions. The agent reasons using translated Chinese context but replies in English.</p>
+                </div>
+            </header>
+
+            <div class="chat-container" id="chat-container">
+                <!-- Welcome Message -->
+                <div class="chat-message assistant">
+                    <div class="avatar"><i class="fas fa-robot"></i></div>
+                    <div class="message-content">
+                        <p>Hello! I am DocuMind. Upload some PDFs in the sidebar and ask me anything about them.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Context Inspector (Hidden by Default) -->
+            <div id="inspector-panel" class="inspector-panel hidden">
+                <div class="inspector-header">
+                    <h4><i class="fas fa-search-plus"></i> Retrieval Inspector</h4>
+                    <button id="close-inspector"><i class="fas fa-times"></i></button>
+                </div>
+                <div id="inspector-content" class="inspector-content">
+                    <!-- Contexts will be shown here -->
+                </div>
+            </div>
+
+            <div class="input-area">
+                <form id="chat-form">
+                    <input type="text" id="query-input" placeholder="Ask a question about your documents..." autocomplete="off" required>
+                    <button type="submit" id="send-btn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="/static/app.js"></script>
+</body>
+</html>
