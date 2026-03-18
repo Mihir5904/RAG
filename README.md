@@ -4,11 +4,11 @@ It specifically features an internal "Reasoning Pipeline" where it dynamically t
 
  Features
 
-    Fast Backend: Powered by FastAPI for robust API routing and static file serving.
-    Sleek User Interface: A sleek, glassmorphic dark-themed UI built with Pure HTML/CSS for a native app feel. No heavy frontend frameworks.
-    Agentic Pipeline: Extracts, chunks, vectorizes via HuggingFace locally, and reasons using Groq Cloud.
-    Context Inspector: Users can toggle to see exactly which documents and what translated (ZH) / native (EN) context the LLM used to derive its answer.
-    Local Embedded Storage: Persists vector embeddings onto disk using ChromaDB (no third-party cloud vector stores required).
+   Fast Backend: Powered by FastAPI for robust API routing and static file serving.
+   Sleek User Interface: A sleek, glassmorphic dark-themed UI built with Pure HTML/CSS for a native app feel. No heavy frontend frameworks.
+   Agentic Pipeline: Extracts, chunks, vectorizes via HuggingFace locally, and reasons using Groq Cloud.
+   Context Inspector: Users can toggle to see exactly which documents and what translated (ZH) / native (EN) context the LLM used to derive its answer.
+   Local Embedded Storage: Persists vector embeddings onto disk using ChromaDB (no third-party cloud vector stores required).
  
  
     llmrag/
@@ -44,6 +44,7 @@ Make sure you have Python 3.10+ installed.
       GROQ_API_KEY=your-api-key-here
 
 Running the Server
-
 Start the FastAPI application. By default, it runs on port 8000.
+    
+    uvicorn backend.main:app --reload
 Once running, simply open your browser and navigate to: http://127.0.0.1:8000
