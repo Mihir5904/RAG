@@ -9,21 +9,23 @@ It specifically features an internal "Reasoning Pipeline" where it dynamically t
     Agentic Pipeline: Extracts, chunks, vectorizes via HuggingFace locally, and reasons using Groq Cloud.
     Context Inspector: Users can toggle to see exactly which documents and what translated (ZH) / native (EN) context the LLM used to derive its answer.
     Local Embedded Storage: Persists vector embeddings onto disk using ChromaDB (no third-party cloud vector stores required).
-llmrag/
-│
-├── backend/
-│   ├── main.py           # FastAPI entry point, handles Routing & Static Mount
-│   └── rag_engine.py     # LlamaIndex & ChromaDB interaction, querying logic
-│
-├── frontend/             # Sent as static files via FastAPI
-│   ├── index.html        # App layout and Sidebar
-│   ├── style.css         # UI Design System (colors, animations, typography)
-│   └── app.js            # Interacts with API endpoints (/upload, /query, /documents)
-│
-├── data/                 # Local directory where PDF uploads are saved
-├── chroma_db/            # Local SQLite/Parquet DB for Chroma Vectors
-├── requirements.txt      # Python Dependencies
-└── .env                  # Environment file (GROQ_API_KEY)
+ 
+ 
+    llmrag/
+    │
+    ├── backend/
+    │   ├── main.py           # FastAPI entry point, handles Routing & Static Mount
+    │   └── rag_engine.py     # LlamaIndex & ChromaDB interaction, querying logic
+    │
+    ├── frontend/             # Sent as static files via FastAPI
+    │   ├── index.html        # App layout and Sidebar
+    │   ├── style.css         # UI Design System (colors, animations, typography)
+    │   └── app.js            # Interacts with API endpoints (/upload, /query, /documents)
+    │
+    ├── data/                 # Local directory where PDF uploads are saved
+    ├── chroma_db/            # Local SQLite/Parquet DB for Chroma Vectors
+    ├── requirements.txt      # Python Dependencies
+    └── .env                  # Environment file (GROQ_API_KEY)
 
 Installation & Setup
 Prerequisites
