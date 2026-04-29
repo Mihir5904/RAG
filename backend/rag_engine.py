@@ -18,6 +18,11 @@ from dotenv import load_dotenv
 # Load env variables (GROQ_API_KEY)
 load_dotenv()
 
+def count_tokens(text):
+    enc = tiktoken.get_encoding("cl100k_base")
+    return len(enc.encode(text))
+
+
 class RAGEngine:
     def __init__(self, data_dir="./data", chroma_dir="./chroma_db"):
         self.data_dir = Path(data_dir)
@@ -37,10 +42,9 @@ class RAGEngine:
         Settings.embed_model = HuggingFaceEmbedding(
             model_name="BAAI/bge-small-en-v1.5"
         )
-        
         # Configure LLM
-        # Replace the string below with your actual Groq API key
-        api_key = ""
+        # Replace the string below with your actual Groq API key or load from env
+        api_key = "asdfqwerty"
         
         Settings.llm = Groq(
             api_key=api_key,
@@ -85,27 +89,66 @@ class RAGEngine:
         with fitz.open(file_path) as doc:
             full_en_text = "\n".join([page.get_text() for page in doc])
         
-        # Aligned Chunking
-        en_splitter = SentenceSplitter(chunk_size=512, chunk_overlap=50)
-        en_chunks = en_splitter.split_text(full_en_text)
+    # Semantic splitter
+        semantic_splitter = SemanticSplitterNodeParser(
+            embed_model= Settings.embed_model,
+            buffer_size=3,  # small buffer = precise splits
+            breakpoint_percentile_threshold=93  # controls sensitivity
+        )
+
+        # Convert text into Document
+        document = Document(text=full_en_text)
+
+        # Perform semantic chunking
+        nodes = semantic_splitter.get_nodes_from_documents([document])
         
-        nodes = []
-        file_name = Path(file_path).name
-        
-        for en_chunk in en_chunks:
-            node = TextNode(
-                text=en_chunk,
-                metadata={
-                    "file_name": file_name
-                }
+        final_nodes = []
+
+        for node in nodes:
+            final_nodes.append(
+                TextNode(
+                    text=node.text,
+                    metadata={
+                        "file_name": file_path.split("/")[-1]
+                    }
+                )
             )
-            nodes.append(node)
             
         # Add to index mapping to chroma storage
-        if len(nodes) > 0:
-            self.index.insert_nodes(nodes)
+        if len(final_nodes) > 0:
+            self.index.insert_nodes(final_nodes)
         
-        return len(nodes)
+        return len(final_nodes)
+
+
+    def baseline_query(self, question: str, top_k: int = 5):
+        retriever = self.index.as_retriever(similarity_top_k=top_k)
+        nodes = retriever.retrieve(question)
+
+        contexts = []
+        for node in nodes:
+            contexts.append(node.text)  # FULL English only
+
+        context_str = "\n\n".join(contexts)
+
+        prompt = f"""
+    Answer the question using the context below.
+
+    {context_str}
+
+    Question: {question}
+    Answer:
+    """
+
+        total_tokens = count_tokens(prompt)
+
+        response = Settings.llm.complete(prompt)
+
+        return {
+            "answer": str(response),
+            "tokens": total_tokens
+        }
+
 
     def query(self, question: str, top_k: int = 3):
         retriever = self.index.as_retriever(similarity_top_k=top_k)
@@ -128,21 +171,28 @@ class RAGEngine:
 
         # Construct Prompt
         context_str = "\n\n".join(
-            [f"English Context:\n{c['en_text']}\n\nChinese Context:\n{c['zh_text']}" for c in contexts]
+            [f"Chinese:\n{c['zh_text']}\n\nEnglish hint:\n{c['en_text'][:100]}" for c in contexts]
         )
         
         prompt = f"""
-Use the Chinese context for reasoning but answer in English.
+
+Use the provided context to answer the question.
+Use the Chinese context for reasoning, but answer succintly in English.
+If answer is partially present, infer logically.
+
 {context_str}
 
 Question: {question}
 Answer:
 """
+        total_tokens = count_tokens(prompt)
+        print("Prompt Tokens:", total_tokens)
         response = Settings.llm.complete(prompt)
         
         return {
             "answer": str(response),
-            "contexts": contexts
+            "contexts": contexts,
+            "tokens": total_tokens
         }
         
     def list_documents(self):
